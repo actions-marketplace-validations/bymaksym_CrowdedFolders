@@ -68,8 +68,12 @@ const { values } = parseArgs({
 const cache = join(process.cwd(), '.field-trial');
 mkdirSync(join(cache, 'lists'), { recursive: true });
 
-const { lint } = /** @type {typeof import('../src/index.ts')} */ (await import('../dist/index.js'));
-const { BUILT_IN_PRESETS, modulesOf, mergeLayer } = await import('../dist/index.js');
+// The built package, imported by a computed path: dist/ only exists after a build, and the types
+// come from src/, so the type check passes on a clean checkout too.
+const dist = new URL('../dist/', import.meta.url).href;
+const { lint, BUILT_IN_PRESETS, modulesOf, mergeLayer } = /** @type {typeof import('../src/index.ts')} */ (
+    await import(`${dist}index.js`)
+);
 
 /** @param {Trial} trial */
 function fileList(trial) {
@@ -136,8 +140,12 @@ for (const trial of chosen) {
     const plain = await lint({ root: cache, files: list.files, config: { extends: ['recommended'] } });
 
     // Folder sizes, after recommended's exclusions, in files and in modules.
-    const { selectFiles } = await import('../dist/core/engine.js');
-    const { buildTree } = await import('../dist/core/paths/tree.js');
+    const { selectFiles } = /** @type {typeof import('../src/core/engine.ts')} */ (
+        await import(`${dist}core/engine.js`)
+    );
+    const { buildTree } = /** @type {typeof import('../src/core/paths/tree.ts')} */ (
+        await import(`${dist}core/paths/tree.js`)
+    );
     const recommended = mergeLayer(
         {
             include: [],
