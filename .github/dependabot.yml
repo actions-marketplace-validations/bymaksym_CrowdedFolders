@@ -18,6 +18,10 @@ updates:
       # @types/node follows the oldest Node in "engines", on purpose: its types stop newer APIs.
       - dependency-name: '@types/node'
         update-types: ['version-update:semver-major']
+      # TypeScript 7 is the native compiler, and typescript-eslint does not run on it yet (ESLint
+      # fails in CI with 7.0.2). Lift this when typescript-eslint supports it.
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
     commit-message: { prefix: chore, include: scope }
   - package-ecosystem: github-actions
     directory: /
