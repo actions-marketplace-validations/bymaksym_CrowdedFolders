@@ -1,0 +1,20 @@
+name: An idea
+description: A rule, an option, an output format.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: What question should crowded-folders answer that it does not?
+    validations: { required: true }
+  - type: textarea
+    id: today
+    attributes:
+      label: How you answer it today
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: It fits if
+      options:
+        - label: It works from file paths alone, without reading contents
+        - label: It needs no network and no new runtime dependency

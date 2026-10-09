@@ -1,0 +1,25 @@
+# Updates come once a month, grouped, as Conventional Commits (commitlint rejects the default prefix).
+# The cooldown has to stay ABOVE pnpm's minimumReleaseAge (3 days, pnpm-workspace.yaml), never equal:
+# the bot picks a version when its job starts, pnpm judges it when it resolves.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule: { interval: monthly }
+    open-pull-requests-limit: 3
+    cooldown: { default-days: 4 }
+    groups:
+      linting:
+        patterns: ['eslint*', '@eslint/*', '@eslint-community/*', 'typescript-eslint', 'prettier*']
+      everything-else:
+        patterns: ['*']
+        exclude-patterns: ['eslint*', '@eslint/*', '@eslint-community/*', 'typescript-eslint', 'prettier*']
+    ignore:
+      # @types/node follows the oldest Node in "engines", on purpose: its types stop newer APIs.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+    commit-message: { prefix: chore, include: scope }
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: monthly }
+    commit-message: { prefix: ci }

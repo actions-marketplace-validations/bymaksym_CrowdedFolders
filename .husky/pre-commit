@@ -1,0 +1,3 @@
+# Formatting and lint on the staged files (fixes what it can), then the types of everything.
+pnpm exec lint-staged --relative
+pnpm run typecheck

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a vulnerability
+    url: https://github.com/bymaksym/CrowdedFolders/security/advisories/new
+    about: Privately, please.
+  - name: How it reads names
+    url: https://github.com/bymaksym/CrowdedFolders/blob/main/docs/how-it-works.md
+    about: Why a folder is reported, step by step. `crowded-folders explain <folder>` shows it for yours.

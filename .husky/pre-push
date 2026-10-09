@@ -1,0 +1,3 @@
+# The slow half: tests, and the tool on itself.
+pnpm test
+pnpm run build && node bin/crowded-folders.js

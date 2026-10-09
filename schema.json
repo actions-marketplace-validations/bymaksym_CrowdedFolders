@@ -1,0 +1,714 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "https://unpkg.com/crowded-folders/schema.json",
+    "title": "crowded-folders configuration",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "$schema": {
+            "type": "string",
+            "description": "This schema, for editors."
+        },
+        "extends": {
+            "type": "array",
+            "items": {
+                "anyOf": [
+                    {
+                        "enum": [
+                            "recommended",
+                            "strict",
+                            "angular",
+                            "react",
+                            "nextjs",
+                            "react-native",
+                            "vue",
+                            "nuxt",
+                            "svelte",
+                            "nestjs",
+                            "python",
+                            "django",
+                            "go",
+                            "rust",
+                            "java",
+                            "android",
+                            "dotnet",
+                            "swift",
+                            "flutter",
+                            "rails",
+                            "php",
+                            "c-cpp",
+                            "unity",
+                            "unreal",
+                            "godot",
+                            "terraform",
+                            "docs",
+                            "data-science",
+                            "latex"
+                        ],
+                        "description": "A built-in preset."
+                    },
+                    {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "A plugin preset (\"namespace/name\"), a package or a file."
+                    }
+                ]
+            },
+            "description": "Presets and configurations applied before this one, in order; later ones win."
+        },
+        "plugins": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "minLength": 1
+            },
+            "uniqueItems": true,
+            "description": "Packages or files whose default export is a plugin: more rules and presets."
+        },
+        "include": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "minLength": 1
+            },
+            "description": "Globs of the files looked at. Default: every file git knows about, or every file under the root without git."
+        },
+        "exclude": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "minLength": 1
+            },
+            "description": "Globs of files and folders left out, on top of .gitignore. A pattern without \"/\" matches at any depth."
+        },
+        "naming": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "How file names are read. Lists accumulate across presets; \"!x\" removes an inherited \"x\".",
+            "properties": {
+                "companions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "description": "Regular expressions removed from each stem, so that companion files join their module: \"_test$\" makes foo_test.go part of foo.go; \"^test_\" makes test_foo.py part of foo.py.",
+                    "examples": [
+                        [
+                            "_test$"
+                        ],
+                        [
+                            "^test_",
+                            "_test$"
+                        ],
+                        [
+                            "Tests?$"
+                        ]
+                    ]
+                },
+                "ignoreLeadingWords": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "description": "Lowercase words skipped at the start of a name before reading what it is about: \"i\" for C# interfaces (IUserService), \"bp\" for Unreal blueprints (BP_Door)."
+                },
+                "groupNumericPrefixes": {
+                    "type": "boolean",
+                    "description": "Whether names that start with a number (0001_initial, 2024-01-01-post) group by it. Default: false."
+                }
+            }
+        },
+        "rules": {
+            "type": "object",
+            "description": "Rules by name, built-in or \"namespace/rule\" from a plugin.",
+            "properties": {
+                "max-files": {
+                    "description": "A folder holds at most `max` files (or modules): past that it is scrolled, not read.",
+                    "anyOf": [
+                        {
+                            "enum": [
+                                "error",
+                                "warn",
+                                "off"
+                            ],
+                            "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                        },
+                        {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "enum": [
+                                        "error",
+                                        "warn",
+                                        "off"
+                                    ],
+                                    "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                                },
+                                {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "max": {
+                                            "type": "integer",
+                                            "minimum": 1,
+                                            "description": "How many it may hold."
+                                        },
+                                        "count": {
+                                            "enum": [
+                                                "files",
+                                                "modules"
+                                            ],
+                                            "description": "\"files\" counts every file; \"modules\" counts a module and its companions once (`foo.ts`, `foo.spec.ts`, `foo.html` are one)."
+                                        },
+                                        "hint": {
+                                            "type": "string",
+                                            "description": "Added to the message: how to split in this ecosystem, or what a new folder costs."
+                                        },
+                                        "dotfiles": {
+                                            "type": "boolean",
+                                            "description": "Whether files whose name starts with a dot count. Default: false — they are mostly tool settings (.gitignore, .editorconfig) that have to live where the tool looks."
+                                        }
+                                    }
+                                }
+                            ],
+                            "minItems": 1,
+                            "maxItems": 2
+                        }
+                    ]
+                },
+                "prefix-groups": {
+                    "description": "At least `min` modules whose names start with the same word belong in a folder named after it: `render-json`, `render-text`, `render-sarif`, `render-pr` are a `render/` folder that was never made.",
+                    "anyOf": [
+                        {
+                            "enum": [
+                                "error",
+                                "warn",
+                                "off"
+                            ],
+                            "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                        },
+                        {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "enum": [
+                                        "error",
+                                        "warn",
+                                        "off"
+                                    ],
+                                    "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                                },
+                                {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "min": {
+                                            "type": "integer",
+                                            "minimum": 2,
+                                            "description": "How many modules sharing a prefix make a group."
+                                        },
+                                        "words": {
+                                            "type": "integer",
+                                            "minimum": 1,
+                                            "maximum": 4,
+                                            "description": "How many leading words form the prefix: 1 groups `user-list` with `user-card`; 2 needs `user-list-*`."
+                                        },
+                                        "ignore": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "minLength": 1
+                                            },
+                                            "uniqueItems": true,
+                                            "description": "Prefixes that are never a group, lowercase, words joined with \"-\": a verb shared by unrelated files, or a convention such as `use`."
+                                        },
+                                        "hint": {
+                                            "type": "string",
+                                            "description": "Added to the message: what making a folder costs in this ecosystem (\"In Go a folder is a package: …\")."
+                                        }
+                                    }
+                                }
+                            ],
+                            "minItems": 1,
+                            "maxItems": 2
+                        }
+                    ]
+                },
+                "max-folders": {
+                    "description": "A folder holds at most `max` subfolders: a long list of folders is a drawer too.",
+                    "anyOf": [
+                        {
+                            "enum": [
+                                "error",
+                                "warn",
+                                "off"
+                            ],
+                            "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                        },
+                        {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "enum": [
+                                        "error",
+                                        "warn",
+                                        "off"
+                                    ],
+                                    "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                                },
+                                {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "max": {
+                                            "type": "integer",
+                                            "minimum": 1,
+                                            "description": "How many subfolders it may hold."
+                                        }
+                                    }
+                                }
+                            ],
+                            "minItems": 1,
+                            "maxItems": 2
+                        }
+                    ]
+                },
+                "redundant-prefix": {
+                    "description": "Modules inside a folder do not repeat the folder's name: `render/render-json.ts` says render twice; `render/json.ts` says it once. A module named exactly like its folder (`render/render.ts`) is its main file and is fine.",
+                    "anyOf": [
+                        {
+                            "enum": [
+                                "error",
+                                "warn",
+                                "off"
+                            ],
+                            "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                        },
+                        {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "enum": [
+                                        "error",
+                                        "warn",
+                                        "off"
+                                    ],
+                                    "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                                },
+                                {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "min": {
+                                            "type": "integer",
+                                            "minimum": 1,
+                                            "description": "How many modules have to repeat the name before it is reported: 1 reports every one."
+                                        }
+                                    }
+                                }
+                            ],
+                            "minItems": 1,
+                            "maxItems": 2
+                        }
+                    ]
+                },
+                "single-file-folders": {
+                    "description": "A folder that holds one file and no subfolders is a level of nesting with nothing to group: keep the file in its parent until it has company. The other side of `max-files`, for those who split too early.",
+                    "anyOf": [
+                        {
+                            "enum": [
+                                "error",
+                                "warn",
+                                "off"
+                            ],
+                            "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                        },
+                        {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "enum": [
+                                        "error",
+                                        "warn",
+                                        "off"
+                                    ],
+                                    "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                                },
+                                {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {}
+                                }
+                            ],
+                            "minItems": 1,
+                            "maxItems": 2
+                        }
+                    ]
+                }
+            },
+            "additionalProperties": {
+                "anyOf": [
+                    {
+                        "enum": [
+                            "error",
+                            "warn",
+                            "off"
+                        ],
+                        "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                    },
+                    {
+                        "type": "array",
+                        "items": [
+                            {
+                                "enum": [
+                                    "error",
+                                    "warn",
+                                    "off"
+                                ],
+                                "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                            },
+                            {
+                                "type": "object"
+                            }
+                        ],
+                        "minItems": 1,
+                        "maxItems": 2
+                    }
+                ]
+            }
+        },
+        "overrides": {
+            "type": "array",
+            "description": "Settings for some folders only. Every override says why.",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "folders",
+                    "reason"
+                ],
+                "properties": {
+                    "folders": {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                            "type": "string",
+                            "minLength": 1
+                        },
+                        "description": "Globs matched against folder paths relative to the root; the root itself is \".\"."
+                    },
+                    "reason": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "Why these folders are different. Required: an override is a silence, and a silence without a reason cannot be reviewed."
+                    },
+                    "rules": {
+                        "type": "object",
+                        "description": "Rules by name, built-in or \"namespace/rule\" from a plugin.",
+                        "properties": {
+                            "max-files": {
+                                "description": "A folder holds at most `max` files (or modules): past that it is scrolled, not read.",
+                                "anyOf": [
+                                    {
+                                        "enum": [
+                                            "error",
+                                            "warn",
+                                            "off"
+                                        ],
+                                        "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                                    },
+                                    {
+                                        "type": "array",
+                                        "items": [
+                                            {
+                                                "enum": [
+                                                    "error",
+                                                    "warn",
+                                                    "off"
+                                                ],
+                                                "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                                            },
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "max": {
+                                                        "type": "integer",
+                                                        "minimum": 1,
+                                                        "description": "How many it may hold."
+                                                    },
+                                                    "count": {
+                                                        "enum": [
+                                                            "files",
+                                                            "modules"
+                                                        ],
+                                                        "description": "\"files\" counts every file; \"modules\" counts a module and its companions once (`foo.ts`, `foo.spec.ts`, `foo.html` are one)."
+                                                    },
+                                                    "hint": {
+                                                        "type": "string",
+                                                        "description": "Added to the message: how to split in this ecosystem, or what a new folder costs."
+                                                    },
+                                                    "dotfiles": {
+                                                        "type": "boolean",
+                                                        "description": "Whether files whose name starts with a dot count. Default: false — they are mostly tool settings (.gitignore, .editorconfig) that have to live where the tool looks."
+                                                    }
+                                                }
+                                            }
+                                        ],
+                                        "minItems": 1,
+                                        "maxItems": 2
+                                    }
+                                ]
+                            },
+                            "prefix-groups": {
+                                "description": "At least `min` modules whose names start with the same word belong in a folder named after it: `render-json`, `render-text`, `render-sarif`, `render-pr` are a `render/` folder that was never made.",
+                                "anyOf": [
+                                    {
+                                        "enum": [
+                                            "error",
+                                            "warn",
+                                            "off"
+                                        ],
+                                        "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                                    },
+                                    {
+                                        "type": "array",
+                                        "items": [
+                                            {
+                                                "enum": [
+                                                    "error",
+                                                    "warn",
+                                                    "off"
+                                                ],
+                                                "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                                            },
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "min": {
+                                                        "type": "integer",
+                                                        "minimum": 2,
+                                                        "description": "How many modules sharing a prefix make a group."
+                                                    },
+                                                    "words": {
+                                                        "type": "integer",
+                                                        "minimum": 1,
+                                                        "maximum": 4,
+                                                        "description": "How many leading words form the prefix: 1 groups `user-list` with `user-card`; 2 needs `user-list-*`."
+                                                    },
+                                                    "ignore": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string",
+                                                            "minLength": 1
+                                                        },
+                                                        "uniqueItems": true,
+                                                        "description": "Prefixes that are never a group, lowercase, words joined with \"-\": a verb shared by unrelated files, or a convention such as `use`."
+                                                    },
+                                                    "hint": {
+                                                        "type": "string",
+                                                        "description": "Added to the message: what making a folder costs in this ecosystem (\"In Go a folder is a package: …\")."
+                                                    }
+                                                }
+                                            }
+                                        ],
+                                        "minItems": 1,
+                                        "maxItems": 2
+                                    }
+                                ]
+                            },
+                            "max-folders": {
+                                "description": "A folder holds at most `max` subfolders: a long list of folders is a drawer too.",
+                                "anyOf": [
+                                    {
+                                        "enum": [
+                                            "error",
+                                            "warn",
+                                            "off"
+                                        ],
+                                        "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                                    },
+                                    {
+                                        "type": "array",
+                                        "items": [
+                                            {
+                                                "enum": [
+                                                    "error",
+                                                    "warn",
+                                                    "off"
+                                                ],
+                                                "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                                            },
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "max": {
+                                                        "type": "integer",
+                                                        "minimum": 1,
+                                                        "description": "How many subfolders it may hold."
+                                                    }
+                                                }
+                                            }
+                                        ],
+                                        "minItems": 1,
+                                        "maxItems": 2
+                                    }
+                                ]
+                            },
+                            "redundant-prefix": {
+                                "description": "Modules inside a folder do not repeat the folder's name: `render/render-json.ts` says render twice; `render/json.ts` says it once. A module named exactly like its folder (`render/render.ts`) is its main file and is fine.",
+                                "anyOf": [
+                                    {
+                                        "enum": [
+                                            "error",
+                                            "warn",
+                                            "off"
+                                        ],
+                                        "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                                    },
+                                    {
+                                        "type": "array",
+                                        "items": [
+                                            {
+                                                "enum": [
+                                                    "error",
+                                                    "warn",
+                                                    "off"
+                                                ],
+                                                "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                                            },
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "min": {
+                                                        "type": "integer",
+                                                        "minimum": 1,
+                                                        "description": "How many modules have to repeat the name before it is reported: 1 reports every one."
+                                                    }
+                                                }
+                                            }
+                                        ],
+                                        "minItems": 1,
+                                        "maxItems": 2
+                                    }
+                                ]
+                            },
+                            "single-file-folders": {
+                                "description": "A folder that holds one file and no subfolders is a level of nesting with nothing to group: keep the file in its parent until it has company. The other side of `max-files`, for those who split too early.",
+                                "anyOf": [
+                                    {
+                                        "enum": [
+                                            "error",
+                                            "warn",
+                                            "off"
+                                        ],
+                                        "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                                    },
+                                    {
+                                        "type": "array",
+                                        "items": [
+                                            {
+                                                "enum": [
+                                                    "error",
+                                                    "warn",
+                                                    "off"
+                                                ],
+                                                "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                                            },
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {}
+                                            }
+                                        ],
+                                        "minItems": 1,
+                                        "maxItems": 2
+                                    }
+                                ]
+                            }
+                        },
+                        "additionalProperties": {
+                            "anyOf": [
+                                {
+                                    "enum": [
+                                        "error",
+                                        "warn",
+                                        "off"
+                                    ],
+                                    "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                                },
+                                {
+                                    "type": "array",
+                                    "items": [
+                                        {
+                                            "enum": [
+                                                "error",
+                                                "warn",
+                                                "off"
+                                            ],
+                                            "description": "\"error\" fails the run, \"warn\" reports without failing, \"off\" does not run the rule."
+                                        },
+                                        {
+                                            "type": "object"
+                                        }
+                                    ],
+                                    "minItems": 1,
+                                    "maxItems": 2
+                                }
+                            ]
+                        }
+                    },
+                    "naming": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "description": "How file names are read. Lists accumulate across presets; \"!x\" removes an inherited \"x\".",
+                        "properties": {
+                            "companions": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "minLength": 1
+                                },
+                                "description": "Regular expressions removed from each stem, so that companion files join their module: \"_test$\" makes foo_test.go part of foo.go; \"^test_\" makes test_foo.py part of foo.py.",
+                                "examples": [
+                                    [
+                                        "_test$"
+                                    ],
+                                    [
+                                        "^test_",
+                                        "_test$"
+                                    ],
+                                    [
+                                        "Tests?$"
+                                    ]
+                                ]
+                            },
+                            "ignoreLeadingWords": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "minLength": 1
+                                },
+                                "description": "Lowercase words skipped at the start of a name before reading what it is about: \"i\" for C# interfaces (IUserService), \"bp\" for Unreal blueprints (BP_Door)."
+                            },
+                            "groupNumericPrefixes": {
+                                "type": "boolean",
+                                "description": "Whether names that start with a number (0001_initial, 2024-01-01-post) group by it. Default: false."
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "suppressions": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The suppressions file, relative to this configuration. Default: crowded-folders-suppressions.json."
+        }
+    }
+}

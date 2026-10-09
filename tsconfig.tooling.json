@@ -1,0 +1,18 @@
+{
+    // The repository's own scripts (tooling/, bin/, configs): plain JavaScript, typed through JSDoc.
+    "compilerOptions": {
+        "target": "ES2023",
+        "lib": ["ES2023"],
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+        "types": ["node"],
+        "allowJs": true,
+        "checkJs": true,
+        // field-trial.mjs takes its types from src/, whose imports end in .ts.
+        "allowImportingTsExtensions": true,
+        "strict": true,
+        "noEmit": true,
+        "skipLibCheck": true
+    },
+    "include": ["tooling/**/*.mjs", "bin/**/*.js", "eslint.config.js", ".config/*.js", ".config/*.mjs"]
+}

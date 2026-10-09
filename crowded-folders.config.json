@@ -1,0 +1,11 @@
+{
+    "$schema": "./schema.json",
+    "extends": ["strict"],
+    "overrides": [
+        {
+            "folders": ["bin"],
+            "reason": "npm's convention: bin/ holds the executable package.json points at, and nothing else.",
+            "rules": { "single-file-folders": "off" }
+        }
+    ]
+}

@@ -1,0 +1,54 @@
+name: crowded-folders
+description: Finds the folders that have become a drawer — too many files, or modules sharing a prefix that are a folder nobody made.
+author: bymaksym
+branding:
+  icon: folder
+  color: orange
+
+inputs:
+  version:
+    description: The crowded-folders version to run. By default, the one this Action was released with, so pinning the Action (by tag or SHA) pins the tool. An npm version to run another; "local" runs this checkout's build.
+    default: ''
+  args:
+    description: Anything the command takes, e.g. "--max-warnings 0" or "src packages/web".
+    default: ''
+  summary:
+    description: Also add the Markdown report to the job summary.
+    default: 'true'
+  working-directory:
+    description: Where to run it (the configuration is looked for from here).
+    default: '.'
+
+runs:
+  using: composite
+  steps:
+    # The version is decided once, for both steps: the Action's own unless one is given.
+    - name: Resolve the version
+      id: resolve
+      shell: bash
+      run: |
+        if [ -z "$VERSION" ]; then VERSION=$(node -p "require(process.env.GITHUB_ACTION_PATH + '/package.json').version"); fi
+        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      env:
+        VERSION: ${{ inputs.version }}
+    - name: Report in the job summary
+      if: inputs.summary == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        if [ "$VERSION" = "local" ]; then cmd=(node "$GITHUB_ACTION_PATH/bin/crowded-folders.js"); else cmd=(npx --yes "crowded-folders@$VERSION"); fi
+        # shellcheck disable=SC2086 # ARGS is a list of arguments on purpose
+        "${cmd[@]}" --format markdown $ARGS >> "$GITHUB_STEP_SUMMARY" || true
+      env:
+        VERSION: ${{ steps.resolve.outputs.version }}
+        ARGS: ${{ inputs.args }}
+    - name: Check, with annotations
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        if [ "$VERSION" = "local" ]; then cmd=(node "$GITHUB_ACTION_PATH/bin/crowded-folders.js"); else cmd=(npx --yes "crowded-folders@$VERSION"); fi
+        # shellcheck disable=SC2086 # ARGS is a list of arguments on purpose
+        "${cmd[@]}" --format github $ARGS
+      env:
+        VERSION: ${{ steps.resolve.outputs.version }}
+        ARGS: ${{ inputs.args }}

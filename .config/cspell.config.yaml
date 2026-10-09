@@ -1,0 +1,62 @@
+version: '0.2'
+language: en-GB,en
+files:
+  - '*.md'
+  - 'docs/**/*.md'
+  - '.github/*.md'
+ignorePaths:
+  - CHANGELOG.md
+  - docs/configuration.md
+  - docs/presets.md
+  - docs/field-trial.md
+  - node_modules/**
+ignoreRegExpList:
+  # `code`, URLs and file names are not prose.
+  - '`[^`]*`'
+  - 'https?://\S+'
+  - '\b[\w-]+\.(?:ts|js|mjs|json|jsonc|md|yml|yaml|go|py|rs|cs|java|kt|swift|dart|rb|php|tf|tex|c|h|cc|cpp)\b'
+words:
+  # The tool and its rules.
+  - jsonc
+  - sarif
+  - lefthook
+  - localsend
+  - ByMaksymDev
+  - Docusaurus
+  - MkDocs
+  - Kotlin
+  - Laravel
+  - Zeitwerk
+  - Allar
+  - Godot
+  - Flutter
+  - NestJS
+  - SvelteKit
+  - Nuxt
+  - Terraform
+  - notebooks
+  - pytest
+  - unpkg
+  - npx
+  - pnpm
+  - semver
+  - knip
+  - commitlint
+  - secretlint
+  - husky
+  - dotfiles
+  - lockfiles
+  - lockfile
+  - monorepo
+  - monorepos
+  - codeql
+  - ripgrep
+  - httpx
+  - excalidraw
+  - jellyfin
+  - mastodon
+  - zulip
+  - petclinic
+  - Alamofire
+  - immich
+  - koel

@@ -1,0 +1,24 @@
+name: A preset for an ecosystem
+description: Propose a preset, or a change to one.
+labels: [preset]
+body:
+  - type: input
+    id: ecosystem
+    attributes:
+      label: Ecosystem
+    validations: { required: true }
+  - type: textarea
+    id: sources
+    attributes:
+      label: What its own guide says about folders and file names
+      description: Links, and the exact sentences. A preset follows a source; without one it is an opinion.
+    validations: { required: true }
+  - type: textarea
+    id: conventions
+    attributes:
+      label: Companion files, prefixes that are not groups, folders that must stay flat
+      description: e.g. foo_test.go, the I of C# interfaces, Android's res/.
+  - type: input
+    id: repository
+    attributes:
+      label: A public repository of this ecosystem for the field trial

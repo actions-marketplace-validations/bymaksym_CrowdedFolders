@@ -1,0 +1,15 @@
+{
+    // What is published: src/ without its tests, to dist/, with declarations for the plugin API.
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "noEmit": false,
+        "rootDir": "src",
+        "outDir": "dist",
+        "declaration": true,
+        "sourceMap": false,
+        "removeComments": false,
+        "newLine": "lf"
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["src/**/*.test.ts", "src/**/test-support/**"]
+}

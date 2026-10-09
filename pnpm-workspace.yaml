@@ -1,0 +1,14 @@
+# Supply-chain quarantine: nothing published less than 3 days ago is resolved. That is the window
+# in which a compromised version is usually caught. Dependabot's cooldown (.github/dependabot.yml)
+# has to stay ABOVE this number, never equal: the bot picks a version when its job starts, pnpm
+# judges it when it resolves, and something 71 hours old above is still too young below.
+minimumReleaseAge: 4320
+# Refuse a version published with weaker guarantees (no provenance) than the one before it.
+trustPolicy: no-downgrade
+# Install scripts run only for these.
+allowBuilds:
+  unrs-resolver: true
+trustPolicyExclude:
+  # @types/node 20 (the oldest Node in "engines", so its types stop newer Node APIs) pins
+  # undici-types ~6.21, published before undici-types had provenance. A type-only package.
+  - undici-types@6.21.0

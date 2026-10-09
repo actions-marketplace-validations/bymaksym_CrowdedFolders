@@ -1,0 +1,99 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - name: No duplicates in the lockfile
+        run: pnpm dedupe --check
+      - run: pnpm run secrets:scan
+      - run: pnpm run format:check
+      - run: pnpm run lint:ci
+      - run: pnpm run typecheck
+      - run: pnpm run spell
+      # With CI set, the generated files (schema.json, docs/configuration.md, docs/presets.md) are
+      # compared, never written: a stale one fails here.
+      - name: Tests, with coverage thresholds
+        run: pnpm run test:coverage
+      - run: pnpm run build
+      - name: The tool on its own repository
+        run: node bin/crowded-folders.js
+      - name: The package as published (publint, are-the-types-wrong)
+        run: pnpm run package:lint
+      - name: The tarball, installed and run as a stranger would
+        run: pnpm run test:package
+      - name: Unused code and dependencies (report, does not block)
+        run: pnpm run knip
+        continue-on-error: true
+
+  systems:
+    name: Tests on ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Paths: backslashes, drive letters and case-insensitive disks.
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+
+  floor:
+    # "engines" is a promise: these run the published package on the oldest Node of each line it
+    # names, pinned exactly, because the number tested has to be the number written.
+    name: The package on Node ${{ matrix.node }}
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['20.19.0', '22.13.0']
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - run: npm pack --pack-destination "$RUNNER_TEMP"
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with: { node-version: '${{ matrix.node }}' }
+      - run: node --version
+      - name: Install the tarball and run it
+        run: node tooling/test-package.mjs --tarball "$(ls "$RUNNER_TEMP"/crowded-folders-*.tgz)"
+
+  action:
+    name: The GitHub Action in this repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - uses: ./
+        with:
+          version: local
+          summary: true

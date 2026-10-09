@@ -1,0 +1,25 @@
+name: Something is reported that should not be (or missed)
+description: A false positive, a false negative, or the command misbehaving.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what you expected
+    validations: { required: true }
+  - type: textarea
+    id: explain
+    attributes:
+      label: Output of `crowded-folders explain <the folder>`
+      description: It shows how every name in the folder was read. File names only; trim what is private.
+      render: text
+  - type: input
+    id: version
+    attributes:
+      label: crowded-folders version (`crowded-folders --version`)
+    validations: { required: true }
+  - type: input
+    id: environment
+    attributes:
+      label: Node version, operating system, and the presets in "extends"
+    validations: { required: true }

@@ -1,0 +1,18 @@
+{
+    "$schema": "https://unpkg.com/knip@6/schema.json",
+    // The published entry points, and the scripts this repository runs.
+    "entry": [
+        "src/index.ts",
+        "src/cli/main.ts",
+        "src/**/*.test.ts",
+        "tooling/*.mjs",
+        "bin/*.js",
+        "examples/plugin/index.js",
+    ],
+    "project": ["src/**/*.ts", "tooling/**/*.mjs", "bin/**/*.js", "examples/**/*.js"],
+    "commitlint": { "config": [".config/commitlint.config.js"] },
+    "cspell": { "config": [".config/cspell.config.yaml"] },
+    // Used by the secrets:scan script through --secretlintrc, which knip does not follow.
+    "ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend"],
+    "ignoreExportsUsedInFile": true,
+}

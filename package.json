@@ -1,0 +1,131 @@
+{
+    "name": "crowded-folders",
+    "version": "0.0.0",
+    "description": "Finds the folders that have become a drawer: too many files in one place, or modules sharing a prefix that are a folder nobody made. Any language, with presets per ecosystem.",
+    "keywords": [
+        "lint",
+        "linter",
+        "folder-structure",
+        "project-structure",
+        "architecture",
+        "file-naming",
+        "directory",
+        "monorepo",
+        "cli",
+        "ci"
+    ],
+    "license": "MIT",
+    "author": "bymaksym",
+    "homepage": "https://github.com/bymaksym/CrowdedFolders#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/bymaksym/CrowdedFolders.git"
+    },
+    "bugs": {
+        "url": "https://github.com/bymaksym/CrowdedFolders/issues"
+    },
+    "type": "module",
+    "engines": {
+        "node": "^20.19.0 || ^22.13.0 || >=24"
+    },
+    "packageManager": "pnpm@12.10.0",
+    "publishConfig": {
+        "access": "public"
+    },
+    "files": [
+        "bin/",
+        "dist/",
+        "schema.json",
+        "docs/",
+        "README.md",
+        "LICENSE"
+    ],
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./schema.json": "./schema.json",
+        "./package.json": "./package.json"
+    },
+    "types": "./dist/index.d.ts",
+    "bin": {
+        "crowded-folders": "bin/crowded-folders.js"
+    },
+    "scripts": {
+        "prepare": "husky || exit 0",
+        "build": "node tooling/clean.mjs dist && tsc --project tsconfig.build.json",
+        "prepublishOnly": "pnpm run build",
+        "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.tooling.json",
+        "test": "node --test --test-reporter=spec \"src/**/*.test.ts\"",
+        "test:coverage": "node --test --experimental-test-coverage --test-coverage-include=\"src/**/*.ts\" --test-coverage-exclude=\"src/**/*.test.ts\" --test-coverage-lines=90 --test-coverage-branches=85 --test-coverage-functions=90 \"src/**/*.test.ts\"",
+        "test:package": "node tooling/test-package.mjs",
+        "lint": "eslint --fix",
+        "lint:ci": "eslint",
+        "format": "prettier --write . --list-different",
+        "format:check": "prettier --check .",
+        "spell": "cspell lint --no-progress --no-summary",
+        "knip": "knip --config .config/knip.jsonc",
+        "self": "node bin/crowded-folders.js",
+        "field-trial": "node tooling/field-trial.mjs",
+        "package:lint": "publint --strict && attw --pack . --profile esm-only",
+        "secrets:scan": "secretlint --secretlintrc .config/secretlintrc.json --maskSecrets \"**/*\"",
+        "deps:audit": "pnpm audit --audit-level high",
+        "check": "node tooling/check.mjs",
+        "check:all": "node tooling/check.mjs --all"
+    },
+    "devDependencies": {
+        "@arethetypeswrong/cli": "^0.18.5",
+        "@commitlint/cli": "^21.2.3",
+        "@commitlint/config-conventional": "^21.2.3",
+        "@eslint-community/eslint-plugin-eslint-comments": "^4.8.1",
+        "@eslint/js": "^10.0.1",
+        "@secretlint/secretlint-rule-preset-recommend": "^13.0.7",
+        "@types/node": "~20.19.43",
+        "cspell": "^10.3.6",
+        "eslint": "^10.12.0",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-n": "^18.4.1",
+        "eslint-plugin-regexp": "^3.3.1",
+        "eslint-plugin-simple-import-sort": "^14.0.0",
+        "eslint-plugin-unicorn": "^77.0.0",
+        "husky": "^9.1.7",
+        "knip": "^6.39.0",
+        "lint-staged": "^17.6.0",
+        "prettier": "^3.9.9",
+        "publint": "^0.3.25",
+        "secretlint": "^13.0.7",
+        "typescript": "~6.0.3",
+        "typescript-eslint": "^8.71.1"
+    },
+    "prettier": {
+        "arrowParens": "avoid",
+        "singleQuote": true,
+        "tabWidth": 4,
+        "printWidth": 120,
+        "endOfLine": "lf",
+        "overrides": [
+            {
+                "files": [
+                    "*.yml",
+                    "*.yaml"
+                ],
+                "options": {
+                    "tabWidth": 2
+                }
+            }
+        ]
+    },
+    "lint-staged": {
+        "*.{ts,mjs,js}": [
+            "eslint --fix",
+            "prettier --write"
+        ],
+        "*.{json,jsonc,md,yml,yaml}": [
+            "prettier --write"
+        ],
+        "*.md": [
+            "cspell lint --no-progress --no-must-find-files"
+        ]
+    }
+}
