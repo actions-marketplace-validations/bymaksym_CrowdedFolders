@@ -1,0 +1,35 @@
+# Announce a release in Discord by hand: for one published by hand (v1.0.0, before npm trusted
+# publishing could be set up), or to post one again. The automatic one is the last step of
+# publish.yml: releases here are made with GITHUB_TOKEN, and an event that token causes starts no
+# workflow, so `on: release` would never fire.
+
+name: Announce release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release to announce (empty = the latest)
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  discord:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: .github/scripts
+      - name: Post to Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_ROLE_ID: ${{ vars.DISCORD_RELEASES_ROLE_ID }}
+          GITHUB_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+          APP: crowded-folders
+          COLOR: '2664576'
+          ICON: https://raw.githubusercontent.com/bymaksym/CrowdedFolders/main/.github/logo.png
+          FOOTER: npm · crowded-folders
+        run: python3 .github/scripts/announce-release.py
