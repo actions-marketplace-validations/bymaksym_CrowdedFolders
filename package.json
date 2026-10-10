@@ -1,6 +1,6 @@
 {
     "name": "crowded-folders",
-    "version": "0.0.0",
+    "version": "1.0.0",
     "description": "Finds the folders that have become a drawer: too many files in one place, or modules sharing a prefix that are a folder nobody made. Any language, with presets per ecosystem.",
     "keywords": [
         "lint",
