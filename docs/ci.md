@@ -45,7 +45,7 @@ jobs:
             - uses: actions/checkout@v7
             - uses: actions/setup-node@v7
               with: { node-version: 24 }
-            - run: npx --yes crowded-folders@1.0.0 --format github
+            - run: npx --yes crowded-folders@1.0.1 --format github
 ```
 
 <!-- x-release-please-end -->
@@ -55,13 +55,13 @@ With a summary on the job page and SARIF for code scanning:
 <!-- x-release-please-start-version -->
 
 ```yaml
-- run: npx --yes crowded-folders@1.0.0 --format markdown >> "$GITHUB_STEP_SUMMARY"
+- run: npx --yes crowded-folders@1.0.1 --format markdown >> "$GITHUB_STEP_SUMMARY"
   continue-on-error: true
-- run: npx --yes crowded-folders@1.0.0 --format sarif --output crowded-folders.sarif
+- run: npx --yes crowded-folders@1.0.1 --format sarif --output crowded-folders.sarif
   continue-on-error: true
 - uses: github/codeql-action/upload-sarif@v4
   with: { sarif_file: crowded-folders.sarif }
-- run: npx --yes crowded-folders@1.0.0 --format github # the step that passes or fails
+- run: npx --yes crowded-folders@1.0.1 --format github # the step that passes or fails
 ```
 
 <!-- x-release-please-end -->
@@ -72,7 +72,7 @@ released with, so pinning the action pins the tool (`version` runs another):
 <!-- x-release-please-start-version -->
 
 ```yaml
-- uses: bymaksym/CrowdedFolders@v1.0.0
+- uses: bymaksym/CrowdedFolders@v1.0.1
   with:
       args: --max-warnings 0 # anything the command takes
       summary: true # add the Markdown report to the job summary
@@ -88,7 +88,7 @@ released with, so pinning the action pins the tool (`version` runs another):
 crowded-folders:
     image: node:24
     script:
-        - npx --yes crowded-folders@1.0.0
+        - npx --yes crowded-folders@1.0.1
 ```
 
 <!-- x-release-please-end -->
@@ -98,7 +98,7 @@ convert, or keep the job log.
 
 ## Other CI (Azure Pipelines, Jenkins, CircleCI, Buildkite…)
 
-Any step that can run Node: `npx --yes crowded-folders@1.0.0`. The exit code does the rest. <!-- x-release-please-version -->
+Any step that can run Node: `npx --yes crowded-folders@1.0.1`. The exit code does the rest. <!-- x-release-please-version -->
 
 ## Git hooks
 
@@ -128,7 +128,7 @@ published package at the version of the tag (it needs Node, which pre-commit ins
 ```yaml
 repos:
     - repo: https://github.com/bymaksym/CrowdedFolders
-      rev: v1.0.0
+      rev: v1.0.1
       hooks:
           - id: crowded-folders # on pre-push; add `stages: [pre-commit]` to run it on every commit
 ```
