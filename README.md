@@ -121,7 +121,7 @@ Details: [docs/adopting.md](docs/adopting.md).
 ```yaml
 # .github/workflows/structure.yml
 - uses: actions/checkout@v7
-- run: npx --yes crowded-folders@1.0.0 --format github # annotations on the pull request
+- run: npx --yes crowded-folders@1.0.1 --format github # annotations on the pull request
 ```
 
 <!-- x-release-please-end -->
