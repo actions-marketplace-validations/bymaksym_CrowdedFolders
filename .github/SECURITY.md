@@ -23,3 +23,7 @@ Only the latest version receives fixes.
 
 Releases are published from GitHub Actions with npm provenance:
 `npm audit signatures` checks that the package came from this repository's publish workflow.
+
+The exception is 1.0.0, published by hand: npm only lets a package be tied to a publishing workflow
+once it exists, so the first version has no provenance. Its contents are the `v1.0.0` tag, which the
+publish workflow built, tested and packed before the step that needed npm.

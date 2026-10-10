@@ -5,8 +5,7 @@
         ".": {
             "release-type": "node",
             "changelog-path": "CHANGELOG.md",
-            "extra-files": ["README.md", "docs/ci.md", ".pre-commit-hooks.yaml"],
-            "release-as": "1.0.0"
+            "extra-files": ["README.md", "docs/ci.md", ".pre-commit-hooks.yaml"]
         }
     }
 }
