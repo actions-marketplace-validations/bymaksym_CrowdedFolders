@@ -1,11 +1,13 @@
 # For https://pre-commit.com: `repo: https://github.com/bymaksym/CrowdedFolders`, `rev:` a release tag.
-# The hook runs the published package at the version of that tag (release-please updates it below):
-# npm no longer runs a git dependency's build scripts by default, so it is not built from this source.
+# The hook runs the published package at the version of that tag (release-please updates it below).
+# pre-commit also installs this repository from git, unbuilt (npm runs no build scripts for a git
+# dependency), and `npx crowded-folders@x` would pick that copy because name and version match: the
+# alias makes npx fetch the package from the registry instead.
 # The check reads the whole tree, not the files of a commit, so it runs on push.
 - id: crowded-folders
   name: crowded-folders
   description: Finds the folders that have become a drawer.
-  entry: npx --yes crowded-folders@1.0.0 # x-release-please-version
+  entry: npx --yes --package=crowded-folders-release@npm:crowded-folders@1.0.0 -- crowded-folders # x-release-please-version
   language: node
   pass_filenames: false
   always_run: true
